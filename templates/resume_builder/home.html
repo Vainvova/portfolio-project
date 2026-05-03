@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Будівник Резюме{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4">Збирайте резюме з ваших даних</h1>
+        <p class="lead mb-5">Редактор структурує інформацію і готує документ. Далі можна експортувати результат у потрібному форматі.</p>
+        
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            {% if user.is_authenticated %}
+                <a href="{% url 'resume_builder:create_resume' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-circle"></i> Створити резюме
+                </a>
+                <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-speedometer2"></i> Панель
+                </a>
+            {% else %}
+                <a href="{% url 'auth_system:register' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-person-plus"></i> Почати
+                </a>
+                <a href="{% url 'auth_system:login' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i> Увійти
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Навіщо це</h2>
+            <p class="lead text-muted">Шаблони, редагування, експорт — без зайвих прикрас.</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-palette2 text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Шаблони макетів</h4>
+                        <p class="card-text">Оберіть макет і заповніть його своїми даними.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-pencil-square text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Редагування без зайвого</h4>
+                        <p class="card-text">Змінюйте текст у полях. Дизайн-роботи не потрібні.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-download text-warning" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Завантажити будь-коли</h4>
+                        <p class="card-text">Експорт у PDF/DOCX та інші формати (залежить від шаблону).</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-cloud-arrow-up text-info" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Зберігання в акаунті</h4>
+                        <p class="card-text">Резюме залишаються у вашому акаунті та доступні для редагування.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-copy text-secondary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Дублікат резюме</h4>
+                        <p class="card-text">Клонуйте резюме для різних вакансій і підганяйте текст.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

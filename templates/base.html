@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Будівник резюме{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Fonts (technical / terminal vibe) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        :root {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --text: #ffffff;
+            --muted: #777777;
+            --border-card: #333333;
+            --border-input: #555555;
+            --btn-plain: #424242;
+            --accent: #1b5e20; /* Dark Emerald */
+        }
+
+        /* Brutalist: no rounded corners anywhere */
+        * {
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background-image: none !important;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--bg) !important;
+            color: var(--text) !important;
+            font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !important;
+        }
+
+        .text-muted {
+            color: var(--muted) !important;
+        }
+
+        a {
+            color: var(--text) !important;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--text) !important;
+            text-decoration: underline;
+        }
+
+        hr {
+            border-top: 2px solid var(--border-card) !important;
+            opacity: 1;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text) !important;
+            font-weight: 800;
+        }
+
+        p, span, div {
+            color: var(--text) !important;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card) !important;
+            border: 2px solid var(--border-card) !important;
+            box-shadow: none !important;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--bg) !important;
+            border-bottom: 2px solid var(--border-card) !important;
+        }
+
+        .navbar-brand {
+            color: var(--text) !important;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .nav-link {
+            color: #dcdcdc !important;
+            font-weight: 800;
+        }
+
+        .nav-link:hover {
+            color: var(--text) !important;
+            background-color: rgba(255, 255, 255, 0.06) !important;
+        }
+
+        /* Hero container (brutal framing) */
+        .hero-section .container {
+            background-color: var(--card) !important;
+            border: 2px solid var(--border-card) !important;
+            padding: 48px 20px;
+        }
+
+        /* Inputs: CRITICAL visibility fix */
+        .form-control,
+        input,
+        textarea,
+        select {
+            background: #252525 !important; /* input background */
+            color: #ffffff !important; /* pure white text */
+            border: 2px solid var(--border-input) !important;
+            box-shadow: none !important;
+        }
+
+        .form-control:focus,
+        input:focus,
+        textarea:focus,
+        select:focus {
+            background: #252525 !important;
+            border-color: #777777 !important;
+            box-shadow: none !important;
+        }
+
+        .form-control::placeholder,
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--muted) !important;
+            opacity: 1 !important;
+        }
+
+        .form-label {
+            color: var(--text) !important;
+            font-weight: 800;
+        }
+
+        /* Alerts */
+        .alert {
+            background-color: #252525 !important;
+            border: 2px solid #555555 !important;
+            color: var(--text) !important;
+        }
+
+        /* Buttons: huge rectangular blocks */
+        .btn {
+            border: 2px solid var(--border-input) !important;
+            background-color: var(--btn-plain) !important;
+            color: var(--text) !important;
+            font-weight: 800 !important;
+            padding: 16px 26px !important;
+            box-shadow: none !important;
+            transition: border-color 0.15s linear !important; /* only border change */
+            transform: none !important;
+        }
+
+        .btn-lg {
+            padding: 18px 28px !important;
+            font-size: 18px !important;
+        }
+
+        .btn-sm {
+            padding: 10px 14px !important;
+            font-size: 14px !important;
+        }
+
+        .btn:hover {
+            border-color: #777777 !important;
+            background-color: inherit !important;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent) !important;
+            border-color: var(--accent) !important;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent) !important;
+            border-color: #7bd07c !important;
+        }
+
+        .btn-secondary {
+            background-color: var(--btn-plain) !important;
+            border-color: var(--border-input) !important;
+        }
+
+        /* Outline/Light variants should look solid too */
+        .btn-light,
+        .btn-outline-light,
+        .btn-outline-primary,
+        .btn-outline-success,
+        .btn-outline-danger,
+        .btn-outline-secondary {
+            background-color: var(--btn-plain) !important;
+            border-color: var(--border-input) !important;
+            color: var(--text) !important;
+        }
+
+        .btn-outline-light:hover,
+        .btn-outline-primary:hover,
+        .btn-outline-success:hover,
+        .btn-outline-danger:hover,
+        .btn-outline-secondary:hover {
+            background-color: var(--btn-plain) !important;
+            border-color: #777777 !important;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--bg) !important;
+            border-top: 2px solid var(--border-card) !important;
+            color: var(--text) !important;
+        }
+
+        .footer h5 {
+            margin-bottom: 12px;
+        }
+
+        /* Extra brutalist overrides for custom page blocks */
+        .bg-light {
+            background-color: var(--card) !important;
+        }
+
+        .dashboard-header {
+            background: var(--card) !important;
+            border: 2px solid var(--border-card) !important;
+            color: var(--text) !important;
+        }
+
+        .stats-card {
+            background: var(--card) !important;
+            border: 2px solid var(--border-card) !important;
+            box-shadow: none !important;
+        }
+
+        .resume-thumbnail {
+            background: var(--card) !important;
+        }
+
+        .announcement-card {
+            background: var(--card) !important;
+            border-left: 2px solid var(--border-input) !important;
+        }
+
+        .resume-preview {
+            background: var(--card) !important;
+            border: 2px solid var(--border-card) !important;
+            color: var(--text) !important;
+        }
+
+        .preview-actions {
+            background: var(--card) !important;
+            border: 2px solid var(--border-card) !important;
+            box-shadow: none !important;
+        }
+
+        .resume-header {
+            background: var(--card) !important;
+            color: var(--text) !important;
+        }
+
+        .resume-section {
+            border-bottom: 2px solid var(--border-card) !important;
+        }
+
+        .section-title {
+            color: var(--text) !important;
+            border-bottom: 2px solid var(--border-input) !important;
+        }
+
+        .experience-title, .education-degree {
+            color: var(--text) !important;
+        }
+
+        .experience-company, .education-institution {
+            color: var(--text) !important;
+        }
+
+        .experience-date, .education-date {
+            color: var(--muted) !important;
+        }
+
+        .skill-level {
+            background: #252525 !important;
+        }
+
+        .skill-progress {
+            background: var(--accent) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'resume_builder:home' %}">
+                <i class="bi bi-file-earmark-person"></i> <span id="brand-text">Будівник Резюме</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'resume_builder:home' %}"><span class="nav-home">Головна</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'resume_builder:template_gallery' %}"><span class="nav-templates">Шаблони</span></a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'resume_builder:dashboard' %}"><span class="nav-dashboard">Панель</span></a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'resume_builder:create_resume' %}"><span class="nav-create">Створити Резюме</span></a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'auth_system:logout' %}"><span class="nav-logout">Вийти</span></a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'auth_system:login' %}"><span class="nav-login">Увійти</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'auth_system:register' %}"><span class="nav-register">Реєстрація</span></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Будівник резюме</h5>
+                </div>
+                <div class="col-md-4">
+                    <h5>Швидкі посилання</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'resume_builder:home' %}" class="text-white text-decoration-none">Головна</a></li>
+                        <li><a href="{% url 'resume_builder:template_gallery' %}" class="text-white text-decoration-none">Шаблони</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'resume_builder:dashboard' %}" class="text-white text-decoration-none">Панель</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Контакти</h5>
+                    <p><i class="bi bi-envelope"></i> support@resumebuilder.com</p>
+                </div>
+            </div>
+            <hr class="bg-white">
+            <div class="text-center">
+                <p>&copy; 2024 Будівник резюме. Усі права захищено.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

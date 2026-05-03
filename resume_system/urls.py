@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path ('', include('auth_system'))
+    path('auth/', include('auth_system.urls', namespace='auth_system')),
+    path('', include('resume_builder.urls', namespace='resume_builder')),
 ]

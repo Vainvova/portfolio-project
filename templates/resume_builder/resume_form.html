@@ -1,0 +1,626 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if title and "Create" in title %}
+        Створення резюме - Будівник резюме
+    {% else %}
+        Редагування резюме - Будівник резюме
+    {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        background: #1e1e1e; /* Dark Grey Card Background */
+        border-radius: 0; /* No rounded corners */
+        padding: 25px;
+        margin-bottom: 30px;
+        border: 2px solid #333333; /* Brutalist border */
+    }
+    
+    .form-section-title {
+        color: #ffffff; /* White title */
+        border-bottom: 2px solid #555555; /* Grey border */
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .dynamic-formset {
+        margin-top: 15px;
+    }
+    
+    .formset-item {
+        background: #1e1e1e; /* Same card background */
+        border: 2px solid #333333; /* Brutalist border */
+        border-radius: 0; /* No rounded corners */
+        padding: 20px;
+        margin-bottom: 15px;
+        position: relative;
+    }
+    
+    .formset-item .btn-remove {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .btn-add-formset {
+        border: 2px solid #555555; /* Thick input-like border */
+        color: #ffffff; /* White text */
+        background: #424242; /* Deep Grey */
+        transition: border-color 0.15s linear;
+    }
+    
+    .btn-add-formset:hover {
+        background: #424242; /* Keep flat, no gradient */
+        color: white;
+        border-style: solid;
+        border-color: #777777 !important;
+    }
+    
+    .progress-indicator {
+        background: #444444; /* Flat line (no gradient) */
+        height: 4px;
+        border-radius: 0; /* No rounded corners */
+        margin-bottom: 30px;
+    }
+    
+    .photo-preview {
+        max-width: 150px;
+        max-height: 150px;
+        border-radius: 0; /* No rounded corners */
+        object-fit: cover;
+        border: 2px solid #555555; /* Thick brutal border */
+    }
+    
+    /* Override form inputs to be dark theme compatible */
+    .form-control {
+        background-color: #252525 !important; /* CRITICAL: input background */
+        border: 2px solid #555555 !important; /* Thick input border */
+        color: #ffffff !important; /* Pure White text */
+        border-radius: 0 !important; /* No rounded corners */
+        font-family: 'Roboto Mono', ui-monospace, monospace;
+        transition: none !important;
+    }
+    
+    .form-control:focus {
+        background-color: #252525 !important; /* Keep same background */
+        border-color: #777777 !important; /* Simple border change */
+        box-shadow: none !important;
+        color: #ffffff !important;
+    }
+    
+    .form-control::placeholder {
+        color: #777777 !important; /* Placeholder */
+    }
+    
+    /* Make labels white/light grey */
+    .form-label {
+        color: #ffffff !important; /* White labels */
+        font-weight: bold;
+    }
+    
+    /* Make headings white */
+    h3.form-section-title {
+        color: #ffffff !important;
+    }
+    
+    /* Override page background */
+    body {
+        background-color: #1a1a1a !important; /* Darker page background */
+    }
+    
+    /* Keep main title white */
+    h1.display-5 {
+        color: #ffffff !important;
+    }
+    
+    /* Make buttons visible */
+    .btn-primary {
+        background-color: #444444 !important; /* Dark button background */
+        border-color: #555555 !important; /* Dark border */
+    }
+    
+    .btn-secondary {
+        background-color: #555555 !important; /* Slightly lighter */
+        border-color: #666666 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Progress Indicator -->
+            <div class="progress-indicator"></div>
+            
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold">
+                    {% if title and "Create" in title %}
+                        Створення резюме
+                    {% else %}
+                        Редагування резюме
+                    {% endif %}
+                </h1>
+                <p class="lead text-muted">Заповніть дані, щоб зібрати резюме.</p>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" id="resumeForm">
+                {% csrf_token %}
+                
+                <!-- Секція: Особисті дані -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="bi bi-person-circle"></i> Особисті дані
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ resume_form.title.id_for_label }}" class="form-label">Назва резюме *</label>
+                            {{ resume_form.title }}
+                            {% if resume_form.title.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ resume_form.title.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ resume_form.photo.id_for_label }}" class="form-label">Фото профілю</label>
+                            {{ resume_form.photo }}
+                            {% if resume_form.instance.photo %}
+                                <div class="mt-2">
+                                    <img src="{{ resume_form.instance.photo.url }}" class="photo-preview" alt="Поточне фото">
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">За бажанням: завантажте фото.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ resume_form.first_name.id_for_label }}" class="form-label">Ім'я *</label>
+                            {{ resume_form.first_name }}
+                            {% if resume_form.first_name.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ resume_form.first_name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ resume_form.last_name.id_for_label }}" class="form-label">Прізвище *</label>
+                            {{ resume_form.last_name }}
+                            {% if resume_form.last_name.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ resume_form.last_name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ resume_form.email.id_for_label }}" class="form-label">Email *</label>
+                            {{ resume_form.email }}
+                            {% if resume_form.email.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ resume_form.email.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ resume_form.phone.id_for_label }}" class="form-label">Телефон</label>
+                            {{ resume_form.phone }}
+                            {% if resume_form.phone.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ resume_form.phone.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ resume_form.address.id_for_label }}" class="form-label">Адреса</label>
+                        {{ resume_form.address }}
+                        {% if resume_form.address.errors %}
+                            <div class="text-danger mt-1">
+                                {{ resume_form.address.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ resume_form.summary.id_for_label }}" class="form-label">Короткий опис</label>
+                        {{ resume_form.summary }}
+                        <small class="form-text text-muted">Коротко опишіть досвід і напрямок, у якому рухаєтесь.</small>
+                        {% if resume_form.summary.errors %}
+                            <div class="text-danger mt-1">
+                                {{ resume_form.summary.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Секція: Досвід роботи -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="bi bi-briefcase"></i> Досвід роботи
+                    </h3>
+                    
+                    <div class="dynamic-formset">
+                        {{ work_formset.management_form }}
+                        
+                        <div id="work-experience-formset">
+                            {% for form in work_formset %}
+                                <div class="formset-item">
+                                    {{ form.id }}
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove" onclick="removeFormsetItem(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.company.id_for_label }}" class="form-label">Компанія *</label>
+                                            {{ form.company }}
+                                            {% if form.company.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.company.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.position.id_for_label }}" class="form-label">Посада *</label>
+                                            {{ form.position }}
+                                            {% if form.position.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.position.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="{{ form.start_date.id_for_label }}" class="form-label">Початок *</label>
+                                            {{ form.start_date }}
+                                            {% if form.start_date.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.start_date.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="{{ form.end_date.id_for_label }}" class="form-label">Кінець</label>
+                                            {{ form.end_date }}
+                                            <div class="form-check mt-2">
+                                                {{ form.current_job }}
+                                                <label for="{{ form.current_job.id_for_label }}" class="form-check-label">Поточна посада</label>
+                                            </div>
+                                            {% if form.end_date.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.end_date.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.description.id_for_label }}" class="form-label">Опис роботи *</label>
+                                        {{ form.description }}
+                                        {% if form.description.errors %}
+                                            <div class="text-danger mt-1">
+                                                {{ form.description.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <button type="button" class="btn btn-add-formset w-100" onclick="addWorkExperience()">
+                            <i class="bi bi-plus-circle"></i> Додати досвід роботи
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Секція: Освіта -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="bi bi-mortarboard"></i> Освіта
+                    </h3>
+                    
+                    <div class="dynamic-formset">
+                        {{ education_formset.management_form }}
+                        
+                        <div id="education-formset">
+                            {% for form in education_formset %}
+                                <div class="formset-item">
+                                    {{ form.id }}
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove" onclick="removeFormsetItem(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.institution.id_for_label }}" class="form-label">Навчальний заклад *</label>
+                                            {{ form.institution }}
+                                            {% if form.institution.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.institution.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.degree.id_for_label }}" class="form-label">Ступінь *</label>
+                                            {{ form.degree }}
+                                            {% if form.degree.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.degree.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.field_of_study.id_for_label }}" class="form-label">Спеціальність *</label>
+                                            {{ form.field_of_study }}
+                                            {% if form.field_of_study.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.field_of_study.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-3 mb-3">
+                                            <label for="{{ form.gpa.id_for_label }}" class="form-label">Оцінка (GPA)</label>
+                                            {{ form.gpa }}
+                                            {% if form.gpa.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.gpa.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="{{ form.start_date.id_for_label }}" class="form-label">Початок *</label>
+                                            {{ form.start_date }}
+                                            {% if form.start_date.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.start_date.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="{{ form.end_date.id_for_label }}" class="form-label">Кінець</label>
+                                            {{ form.end_date }}
+                                            <div class="form-check mt-2">
+                                                {{ form.current_study }}
+                                                <label for="{{ form.current_study.id_for_label }}" class="form-check-label">Триває навчання</label>
+                                            </div>
+                                            {% if form.end_date.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.end_date.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <button type="button" class="btn btn-add-formset w-100" onclick="addEducation()">
+                            <i class="bi bi-plus-circle"></i> Додати освіту
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Секція: Навички -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="bi bi-star"></i> Навички
+                    </h3>
+                    
+                    <div class="dynamic-formset">
+                        {{ skill_formset.management_form }}
+                        
+                        <div id="skill-formset">
+                            {% for form in skill_formset %}
+                                <div class="formset-item">
+                                    {{ form.id }}
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove" onclick="removeFormsetItem(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <label for="{{ form.name.id_for_label }}" class="form-label">Назва навички *</label>
+                                            {{ form.name }}
+                                            {% if form.name.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.name.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="{{ form.level.id_for_label }}" class="form-label">Рівень володіння *</label>
+                                            {{ form.level }}
+                                            {% if form.level.errors %}
+                                                <div class="text-danger mt-1">
+                                                    {{ form.level.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <button type="button" class="btn btn-add-formset w-100" onclick="addSkill()">
+                            <i class="bi bi-plus-circle"></i> Додати навичку
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Скасувати
+                    </a>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-lg" onclick="saveDraft()">
+                            <i class="bi bi-save"></i> Зберегти чорновик
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i>
+                            {% if title and "Create" in title %}Створити резюме{% else %}Оновити резюме{% endif %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Formset management
+const workFormsetPrefix = '{{ work_formset.prefix }}';
+const educationFormsetPrefix = '{{ education_formset.prefix }}';
+const skillFormsetPrefix = '{{ skill_formset.prefix }}';
+
+function addWorkExperience() {
+    const formset = document.getElementById('work-experience-formset');
+    const totalForms = document.getElementById(`id_${workFormsetPrefix}-TOTAL_FORMS`);
+    const formCount = parseInt(totalForms.value);
+    
+    const newForm = formset.children[0].cloneNode(true);
+    newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formCount);
+    
+    // Clear form values
+    newForm.querySelectorAll('input, textarea').forEach(input => {
+        if (input.type === 'checkbox') {
+            input.checked = false;
+        } else {
+            input.value = '';
+        }
+    });
+    
+    formset.appendChild(newForm);
+    totalForms.value = formCount + 1;
+}
+
+function addEducation() {
+    const formset = document.getElementById('education-formset');
+    const totalForms = document.getElementById(`id_${educationFormsetPrefix}-TOTAL_FORMS`);
+    const formCount = parseInt(totalForms.value);
+    
+    const newForm = formset.children[0].cloneNode(true);
+    newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formCount);
+    
+    // Clear form values
+    newForm.querySelectorAll('input, textarea').forEach(input => {
+        if (input.type === 'checkbox') {
+            input.checked = false;
+        } else {
+            input.value = '';
+        }
+    });
+    
+    formset.appendChild(newForm);
+    totalForms.value = formCount + 1;
+}
+
+function addSkill() {
+    const formset = document.getElementById('skill-formset');
+    const totalForms = document.getElementById(`id_${skillFormsetPrefix}-TOTAL_FORMS`);
+    const formCount = parseInt(totalForms.value);
+    
+    const newForm = formset.children[0].cloneNode(true);
+    newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formCount);
+    
+    // Clear form values
+    newForm.querySelectorAll('input, select').forEach(input => {
+        input.value = '';
+    });
+    
+    formset.appendChild(newForm);
+    totalForms.value = formCount + 1;
+}
+
+function removeFormsetItem(button) {
+    const formsetItem = button.closest('.formset-item');
+    const deleteInput = formsetItem.querySelector('[name$="-DELETE"]');
+    
+    if (deleteInput) {
+        deleteInput.value = '1';
+        formsetItem.style.display = 'none';
+    } else {
+        formsetItem.remove();
+    }
+}
+
+function saveDraft() {
+    // In a real application, this would save as draft
+    alert('Збереження чорновика буде доступне найближчим часом.');
+}
+
+// Auto-hide end date when current job is checked
+document.addEventListener('change', function(e) {
+    if (e.target.matches('[name$="-current_job"]')) {
+        const endDateInput = e.target.closest('.formset-item').querySelector('[name$="-end_date"]');
+        if (e.target.checked) {
+            endDateInput.value = '';
+            endDateInput.disabled = true;
+        } else {
+            endDateInput.disabled = false;
+        }
+    }
+    
+    if (e.target.matches('[name$="-current_study"]')) {
+        const endDateInput = e.target.closest('.formset-item').querySelector('[name$="-end_date"]');
+        if (e.target.checked) {
+            endDateInput.value = '';
+            endDateInput.disabled = true;
+        } else {
+            endDateInput.disabled = false;
+        }
+    }
+});
+
+// Photo preview
+document.getElementById('id_photo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.createElement('img');
+            preview.src = e.target.result;
+            preview.className = 'photo-preview mt-2';
+            
+            // Remove existing preview
+            const existingPreview = document.querySelector('.photo-preview');
+            if (existingPreview) {
+                existingPreview.remove();
+            }
+            
+            e.target.parentNode.appendChild(preview);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}
