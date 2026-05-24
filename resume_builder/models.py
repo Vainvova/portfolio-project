@@ -4,9 +4,17 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class ResumeTemplate(models.Model):
+    CATEGORY_CHOICES = [
+        ('professional', 'Професійні'),
+        ('creative', 'Креативні'),
+        ('modern', 'Сучасні'),
+        ('simple', 'Прості'),
+    ]
+
     name = models.CharField(max_length=100)
     description = models.TextField()
     thumbnail = models.ImageField(upload_to='templates/', blank=True, null=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='professional')
     is_premium = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -37,6 +45,12 @@ class Resume(models.Model):
     
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def is_complete(self):
+        return bool(
+            self.title and self.first_name and self.last_name and self.email
+        )
 
 class WorkExperience(models.Model):
     resume = models.ForeignKey(Resume, on_delete=models.CASCADE, related_name='work_experiences')

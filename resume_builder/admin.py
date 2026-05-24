@@ -3,8 +3,8 @@ from .models import ResumeTemplate, Resume, WorkExperience, Education, Skill, An
 
 @admin.register(ResumeTemplate)
 class ResumeTemplateAdmin(admin.ModelAdmin):
-    list_display = ['name', 'is_premium', 'created_at']
-    list_filter = ['is_premium', 'created_at']
+    list_display = ['name', 'category', 'is_premium', 'created_at']
+    list_filter = ['category', 'is_premium', 'created_at']
     search_fields = ['name', 'description']
 
 class WorkExperienceInline(admin.TabularInline):

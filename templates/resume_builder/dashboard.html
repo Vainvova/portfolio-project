@@ -66,6 +66,7 @@
 {% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <!-- Dashboard Header -->
 <div class="dashboard-header">
     <div class="container">
@@ -106,7 +107,7 @@
                 <div class="stats-icon text-success">
                     <i class="bi bi-check-circle"></i>
                 </div>
-                <h3 class="fw-bold">{{ resumes|length }}</h3>
+                <h3 class="fw-bold">{{ published_count }}</h3>
                 <p class="text-muted mb-0">Завершено</p>
             </div>
         </div>
@@ -116,7 +117,7 @@
                 <div class="stats-icon text-warning">
                     <i class="bi bi-pencil"></i>
                 </div>
-                <h3 class="fw-bold">0</h3>
+                <h3 class="fw-bold">{{ draft_count }}</h3>
                 <p class="text-muted mb-0">У процесі</p>
             </div>
         </div>
@@ -140,10 +141,10 @@
                     <i class="bi bi-folder"></i> Мої резюме
                 </h2>
                 <div class="d-flex gap-2">
-                    <select class="form-select form-select-sm" style="width: auto;">
-                        <option>Сортувати: нещодавно оновлені</option>
-                        <option>Сортувати: назва</option>
-                        <option>Сортувати: дата створення</option>
+                    <select class="form-select form-select-sm" style="width: auto;" id="resumeSort" onchange="sortResumes(this.value)">
+                        <option value="updated" {% if sort == 'updated' %}selected{% endif %}>Сортувати: нещодавно оновлені</option>
+                        <option value="title" {% if sort == 'title' %}selected{% endif %}>Сортувати: назва</option>
+                        <option value="created" {% if sort == 'created' %}selected{% endif %}>Сортувати: дата створення</option>
                     </select>
                 </div>
             </div>
@@ -170,7 +171,7 @@
                                     <i class="bi bi-clock"></i> Оновлено {{ resume.updated_at|timesince }} тому
                                 </small>
                                 {% if resume.is_published %}
-                                    <span class="badge bg-success">Опубліковано</span>
+                                    <span class="badge bg-success">Завершено</span>
                                 {% else %}
                                     <span class="badge bg-secondary">Чернетка</span>
                                 {% endif %}
@@ -275,8 +276,16 @@
     </div>
 </div>
 
+{% endblock %}
+
 {% block extra_js %}
 <script>
+function sortResumes(sortValue) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort', sortValue);
+    window.location.href = url.toString();
+}
+
 function cloneResume(resumeId) {
     if (confirm('Справді дублювати це резюме?')) {
         window.location.href = `{% url 'resume_builder:clone_resume' 0 %}`.replace('0', resumeId);
@@ -292,7 +301,11 @@ function deleteResume(resumeId) {
         
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
         if (csrfToken) {
-            form.appendChild(csrfToken.cloneNode());
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'csrfmiddlewaretoken';
+            input.value = csrfToken.value;
+            form.appendChild(input);
         }
         
         document.body.appendChild(form);
@@ -320,5 +333,4 @@ setInterval(() => {
     console.log('Checking for new announcements...');
 }, 300000);
 </script>
-{% endblock %}
 {% endblock %}

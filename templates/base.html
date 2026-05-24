@@ -292,6 +292,73 @@
         .skill-progress {
             background: var(--accent) !important;
         }
+
+        /* Dropdown menu (profile) */
+        .dropdown-menu {
+            background-color: var(--card) !important;
+            border: 2px solid var(--border-card) !important;
+            padding: 0.25rem 0 !important;
+        }
+
+        .dropdown-item,
+        .dropdown-item span {
+            color: var(--text) !important;
+            background-color: transparent !important;
+            font-weight: 700;
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus,
+        .dropdown-item:active {
+            background-color: #333333 !important;
+            color: var(--text) !important;
+        }
+
+        .dropdown-divider {
+            border-top: 2px solid var(--border-card) !important;
+            margin: 0.25rem 0 !important;
+        }
+
+        .dropdown-item button {
+            width: 100%;
+            text-align: left;
+            border: none !important;
+            background: transparent !important;
+            padding: 0.25rem 1rem;
+            color: var(--text) !important;
+            font-weight: 700;
+        }
+
+        /* Checkboxes */
+        .form-check-input {
+            width: 1.1em;
+            height: 1.1em;
+            background-color: #252525 !important;
+            border: 2px solid var(--border-input) !important;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--accent) !important;
+            border-color: var(--accent) !important;
+        }
+
+        .form-check-input:focus {
+            box-shadow: none !important;
+            border-color: #777777 !important;
+        }
+
+        .form-check-label {
+            color: var(--text) !important;
+        }
+
+        .badge.bg-success {
+            background-color: var(--accent) !important;
+        }
+
+        .badge.bg-secondary {
+            background-color: #555555 !important;
+            color: var(--text) !important;
+        }
     </style>
 </head>
 <body>
@@ -320,13 +387,18 @@
                             <a class="nav-link" href="{% url 'resume_builder:dashboard' %}"><span class="nav-dashboard">Панель</span></a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i> {{ user.username }}
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'resume_builder:create_resume' %}"><span class="nav-create">Створити Резюме</span></a></li>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'resume_builder:create_resume' %}"><span class="nav-create">Створити резюме</span></a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'auth_system:logout' %}"><span class="nav-logout">Вийти</span></a></li>
+                                <li>
+                                    <form method="post" action="{% url 'auth_system:logout' %}" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">Вийти</button>
+                                    </form>
+                                </li>
                             </ul>
                         </li>
                     {% else %}
@@ -383,7 +455,7 @@
             </div>
             <hr class="bg-white">
             <div class="text-center">
-                <p>&copy; 2024 Будівник резюме. Усі права захищено.</p>
+                <p>&copy; {% now "Y" %} Будівник резюме. Усі права захищено.</p>
             </div>
         </div>
     </footer>
